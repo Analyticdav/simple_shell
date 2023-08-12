@@ -9,5 +9,6 @@ void execute_command(char *cmd, char **env);
 int _strcmp(char *s1, char *s2);
 char *extract_path(char **env);
 char *_strcat(char *s1, char *s2);
+void _strcpy(char *dest, char *src);
 
 #endif /*!SHELL_H_*/

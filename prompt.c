@@ -17,7 +17,7 @@ void prompt(char *env[])
 	int wstatus;
 
 	signal(SIGINT, HANDLE_CTRL_C);
-	while ((int)read != -1)
+	while (1)
 	{
 		write(STDOUT_FILENO, PROMPT_SYMBOL, _strlen(PROMPT_SYMBOL));
 		read = getline(&s_line, &s_len, stdin);
@@ -27,14 +27,14 @@ void prompt(char *env[])
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			free(s_line);
-			exit(98);
+			exit(0);
 		}
 		child_pid = fork();
 
 		if (child_pid == 0)
 		{
 			execute_command(s_line, env);
-			write(STDOUT_FILENO, "\n", 1);
+			exit(0);
 		}
 		else
 			wait(&wstatus);
@@ -45,19 +45,30 @@ void execute_command(char *cmd, char** env)
 {
 	char *args[10];
 	char *path_env;
-	char *cmd_path_prefix;
+	char *cmd_path_prefix, *cmd_copy;
 	char *cmd_path, *last_token;
 
+	/*Check if the command is a path*/
+	/*If it is, execute it instead*/
 	if (*cmd == '/')
 	{
-		cmd_path = strtok(cmd, "/");
 		last_token = NULL;
+		cmd_copy = malloc(_strlen(cmd));
+		_strcpy(cmd_copy, cmd); /*Store a copy of the command*/
+		cmd_path = strtok(cmd, "/");
 		while (cmd_path != NULL)
 		{
 			last_token = cmd_path;
 			cmd_path = strtok(NULL, "/");
 		}
-		cmd = last_token;
+		args[0] = last_token;
+		args[1] = NULL;
+		if (execve(cmd_copy, args, env) != -1)
+		{
+			perror(cmd);
+			exit(EXIT_FAILURE);
+		}
+		free(cmd_copy);
 	}
 	path_env = extract_path(env);
 	if (path_env == NULL)
@@ -73,6 +84,11 @@ void execute_command(char *cmd, char** env)
 	while (cmd_path_prefix != NULL)
 	{
 		cmd_path = _strcat(cmd_path_prefix, cmd);
+		if (cmd_path == NULL)
+		{
+			perror(cmd);
+			exit(EXIT_FAILURE);
+		}
 		if (execve(cmd_path, args, env) != -1)
 		{
 			free(cmd_path);

@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <stdio.h>
 #include <stdlib.h>
 
 int _strcmp(char *s1, char *s2)
@@ -39,6 +40,8 @@ char *_strcat(char *s1, char *s2)
 	l_s2 = _strlen(s2);
 
 	arr = malloc(l_s1 + l_s2 + 2);
+	if (arr == NULL)
+		return (NULL);
 	i = 0;
 	while(i < l_s1)
 	{
@@ -54,4 +57,16 @@ char *_strcat(char *s1, char *s2)
 	}
 	arr[l_s1 + l_s2 + 1] = '\0';
 	return (arr);
+}
+void _strcpy(char *dest, char *src)
+{
+	int i;
+
+	i = 0;
+	while (src[i] != '\0')
+	{
+		dest[i] = src[i];
+		i++;
+	}
+	dest[i] = '\0';
 }
