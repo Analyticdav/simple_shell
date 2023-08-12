@@ -1,7 +1,7 @@
 #ifndef SHELL_H_
 #define SHELL_H_
 
-#define PROMPT_SYMBOL "$ "
+#define PROMPT_SYMBOL "($) "
 void prompt(char *env[]);
 int _strlen(char *s);
 void HANDLE_CTRL_C(int signum);

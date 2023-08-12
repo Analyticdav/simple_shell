@@ -26,7 +26,8 @@ void prompt(char *env[])
 		if ((int)read == EOF)
 		{
 			write(STDOUT_FILENO, "\n", 1);
-			exit(1);
+			free(s_line);
+			exit(98);
 		}
 		child_pid = fork();
 
@@ -43,20 +44,36 @@ void prompt(char *env[])
 void execute_command(char *cmd, char** env)
 {
 	char *args[10];
-	char *PATH;
+	char *path_env;
 	char *cmd_path_prefix;
-	char *cmd_path;
+	char *cmd_path, *last_token;
 
-	PATH = extract_path(env);
+	if (*cmd == '/')
+	{
+		cmd_path = strtok(cmd, "/");
+		last_token = NULL;
+		while (cmd_path != NULL)
+		{
+			last_token = cmd_path;
+			cmd_path = strtok(NULL, "/");
+		}
+		cmd = last_token;
+	}
+	path_env = extract_path(env);
+	if (path_env == NULL)
+	{
+		perror(cmd);
+		exit(EXIT_FAILURE);
+	}
 
 	args[0] = cmd;
 	args[1] = NULL;
 
-	cmd_path_prefix = strtok(PATH, ":");
+	cmd_path_prefix = strtok(path_env, ":");
 	while (cmd_path_prefix != NULL)
 	{
 		cmd_path = _strcat(cmd_path_prefix, cmd);
-		if (execve(cmd_path, args, NULL) != -1)
+		if (execve(cmd_path, args, env) != -1)
 		{
 			free(cmd_path);
 			break;
@@ -65,7 +82,7 @@ void execute_command(char *cmd, char** env)
 		cmd_path_prefix = strtok(NULL, ":");
 	}
 	perror(*args);
-	exit(1);
+	exit(EXIT_FAILURE);
 }
 
 char *extract_path(char **env)

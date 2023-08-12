@@ -38,7 +38,7 @@ char *_strcat(char *s1, char *s2)
 	l_s1 = _strlen(s1);
 	l_s2 = _strlen(s2);
 
-	arr = malloc(l_s1 + l_s2 + 1);
+	arr = malloc(l_s1 + l_s2 + 2);
 	i = 0;
 	while(i < l_s1)
 	{
