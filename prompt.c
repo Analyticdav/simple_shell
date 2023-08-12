@@ -8,6 +8,15 @@
 #include <signal.h>
 #include <sys/wait.h>
 
+/**
+ * prompt - Display a shell prompt and execute user commands.
+ *
+ * This function displays the shell prompt symbol and
+ * continuously reads user input commands. It executes
+ * the entered command using the execute_command function.
+ *
+ * @env: An array of environment variables.
+ */
 void prompt(char *env[])
 {
 	char *s_line = NULL;
@@ -23,14 +32,14 @@ void prompt(char *env[])
 		read = getline(&s_line, &s_len, stdin);
 		s_line[read - 1] = '\0';
 
-		if ((int)read == EOF)
+		if ((int)read == -1)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			free(s_line);
 			exit(0);
 		}
-		child_pid = fork();
 
+		child_pid = fork();
 		if (child_pid == 0)
 		{
 			execute_command(s_line, env);
@@ -41,66 +50,47 @@ void prompt(char *env[])
 	}
 	free(s_line);
 }
-void execute_command(char *cmd, char** env)
+/**
+ * execute_command - Execute a user command.
+ *
+ * This function prepares and executes a user command by
+ * parsing the input command string, handling path-specific
+ * commands, and managing child processes.
+ *
+ * @cmd: The user command to execute.
+ * @env: An array of environment variables.
+ */
+void execute_command(char *cmd, char **env)
 {
-	char *args[10];
-	char *path_env;
-	char *cmd_path_prefix, *cmd_copy;
-	char *cmd_path, *last_token;
+	char **args;
+	list_t *head = NULL;
 
-	/*Check if the command is a path*/
-	/*If it is, execute it instead*/
+	cmd = _strstrp(cmd);
+	if (*cmd == 0)
+		return;
+	args = handle_command_with_args(cmd, &head);
+	/*Check if the command is a path. If it is, execute it instead*/
 	if (*cmd == '/')
 	{
-		last_token = NULL;
-		cmd_copy = malloc(_strlen(cmd));
-		_strcpy(cmd_copy, cmd); /*Store a copy of the command*/
-		cmd_path = strtok(cmd, "/");
-		while (cmd_path != NULL)
-		{
-			last_token = cmd_path;
-			cmd_path = strtok(NULL, "/");
-		}
-		args[0] = last_token;
-		args[1] = NULL;
-		if (execve(cmd_copy, args, env) != -1)
-		{
-			perror(cmd);
-			exit(EXIT_FAILURE);
-		}
-		free(cmd_copy);
+		handle_path_to_cmd(cmd, env, args);
+		free(args);
+		return;
 	}
-	path_env = extract_path(env);
-	if (path_env == NULL)
-	{
-		perror(cmd);
-		exit(EXIT_FAILURE);
-	}
-
-	args[0] = cmd;
-	args[1] = NULL;
-
-	cmd_path_prefix = strtok(path_env, ":");
-	while (cmd_path_prefix != NULL)
-	{
-		cmd_path = _strcat(cmd_path_prefix, cmd);
-		if (cmd_path == NULL)
-		{
-			perror(cmd);
-			exit(EXIT_FAILURE);
-		}
-		if (execve(cmd_path, args, env) != -1)
-		{
-			free(cmd_path);
-			break;
-		}
-		free(cmd_path);
-		cmd_path_prefix = strtok(NULL, ":");
-	}
-	perror(*args);
-	exit(EXIT_FAILURE);
+	handle_cmd(cmd, env, args);
+	perror(SHELL_NAME);
+	free(args);
+	free_list(head);
 }
-
+/**
+ * extract_path - Extract the PATH environment variable.
+ *
+ * This function searches through the environment variables
+ * for the PATH variable and returns its value, which
+ * represents the directories to search for executables.
+ *
+ * @env: An array of environment variables.
+ * Return: Pointer to the PATH value, or NULL if not found.
+ */
 char *extract_path(char **env)
 {
 	char *token;
