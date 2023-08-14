@@ -17,13 +17,11 @@
  *
  * @env: An array of environment variables.
  */
-void prompt(char *env[])
+void prompt(char **env)
 {
 	char *s_line = NULL;
 	size_t s_len = 0;
 	size_t read = 0;
-	int child_pid;
-	int wstatus;
 
 	signal(SIGINT, HANDLE_CTRL_C);
 	while (1)
@@ -42,18 +40,10 @@ void prompt(char *env[])
 
 		if (_strcmp(_strstrp(s_line), "exit") == 0)
 		{
-			free(s_line);
-			exit(0); 
+			break;
 		}
 
-		child_pid = fork();
-		if (child_pid == 0)
-		{
-			execute_command(s_line, env);
-			exit(0);
-		}
-		else
-			wait(&wstatus);
+		execute_command(s_line, env);
 	}
 	free(s_line);
 }
@@ -79,40 +69,65 @@ void execute_command(char *cmd, char **env)
 	/*Check if the command is a path. If it is, execute it instead*/
 	if (*cmd == '/')
 	{
-		handle_path_to_cmd(cmd, env, args);
+		handle_path_to_cmd(cmd, args, env);
 		free(args);
 		return;
 	}
-	handle_cmd(cmd, env, args);
-	perror(SHELL_NAME);
+	handle_cmd(cmd, args, env);
 	free(args);
 	free_list(head);
 }
 /**
- * extract_path - Extract the PATH environment variable.
+ * _getenv - Extract the requested environment variable @_env.
  *
  * This function searches through the environment variables
- * for the PATH variable and returns its value, which
- * represents the directories to search for executables.
+ * for the _env variable and returns its value, which
  *
- * @env: An array of environment variables.
- * Return: Pointer to the PATH value, or NULL if not found.
+ * @_env: environment variable to extract.
+ * @env: An array of environment variable.
+ * Return: Pointer to the variable value, or NULL if not found.
  */
-char *extract_path(char **env)
+char *_getenv(char *_env, char **env)
 {
-	char *token;
-	int i;
+	int i, j;
+	char **env_cpy;
+	int env_found = 0;
 
+	env_cpy = env;
 	i = 0;
-	while (env[i] != 0)
+	while (env_cpy[i] != NULL && env_found == 0)
 	{
-		token = strtok(env[i], "=");
-		if (_strcmp(token, "PATH") == 0)
+		for (j = 0; env_cpy[i][j] != '=' && _env[j] != '\0'; j++)
 		{
-			token = strtok(NULL, "=");
-			return (token);
+			if (env_cpy[i][j] != _env[j])
+			{
+				env_found = 0;
+				break;
+			}
+			env_found = 1;
 		}
+		if (env_found)
+			return (env_cpy[i]);
 		i++;
 	}
 	return (NULL);
 }
+
+/**
+ * printenv - print out all environment variables.
+ *
+ * @env: An array of environment variable.
+ */
+ void print_env(char **env)
+ {
+	int i = 0;
+	char **p_env, new_line = '\n';
+
+	p_env = env;
+	while (p_env[i] != NULL)
+	{
+		write(STDOUT_FILENO, p_env[i], _strlen(p_env[i]));
+		write(STDOUT_FILENO, &new_line, 1);
+		i++;
+	}
+ }

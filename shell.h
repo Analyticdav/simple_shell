@@ -25,11 +25,12 @@ char *extract_path(char **env);
 char *_strcat(char *s1, char *s2);
 void _strcpy(char *dest, char *src);
 char *_strstrp(char *s);
-void handle_path_to_cmd(char *cmd, char **env, char **args);
+void handle_path_to_cmd(char *cmd, char **args, char **env);
 char **handle_command_with_args(char *cmd, list_t **head);
-void handle_cmd(char *cmd, char **env, char **args);
+void handle_cmd(char *cmd, char **args, char **env);
 size_t list_len(const list_t *h);
 list_t *add_node_end(list_t **head, char *str);
 void free_list(list_t *head);
+char *_getenv(char *_env, char **env);
 
 #endif /*!SHELL_H_*/

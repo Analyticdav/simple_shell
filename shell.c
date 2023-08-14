@@ -1,5 +1,7 @@
 #include "shell.h"
 #include <stdio.h>
+#include <unistd.h>
+
 
 /**
  * main - Entry point of the shell program.
@@ -15,8 +17,6 @@
  */
 int main(int argc, char *argv[], char *env[])
 {
-	/* int i; */
-
 	(void) argv;
 	if (argc == 1)
 	{

@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
+#include <sys/stat.h>
 
 /**
  * HANDLE_CTRL_C - Handle the Ctrl+C signal.
@@ -32,10 +34,10 @@ void HANDLE_CTRL_C(int signum)
  * @env: The environment variables.
  * @args: An array of command arguments.
  */
-void handle_path_to_cmd(char *cmd, char **env, char **args)
+void handle_path_to_cmd(char *cmd, char **args, char **env)
 {
-	char *cmd_copy;
-	char *cmd_path, *last_token;
+	char *cmd_copy, *cmd_path, *last_token;
+	int child_pid, wstatus;
 
 	last_token = NULL;
 	cmd_copy = malloc(_strlen(cmd) + 1);
@@ -48,11 +50,20 @@ void handle_path_to_cmd(char *cmd, char **env, char **args)
 	}
 	args[0] = last_token;
 
-	if (execve(cmd_copy, args, env) != -1)
+	if (access(cmd_copy, F_OK) == 0)
 	{
-		free(cmd_copy);
-		perror(SHELL_NAME);
-		exit(EXIT_FAILURE);
+		child_pid = fork();
+		if (child_pid == 0)
+		{
+			if (execve(cmd_copy, args, env) != -1)
+			{
+				free(cmd_copy);
+				perror(SHELL_NAME);
+			}
+			exit(0);
+		}
+		else
+			wait(&wstatus);
 	}
 	free(cmd_copy);
 }
@@ -68,33 +79,48 @@ void handle_path_to_cmd(char *cmd, char **env, char **args)
  * @env: The environment variables.
  * @args: An array of command arguments.
  */
-void handle_cmd(char *cmd, char **env, char **args)
+void handle_cmd(char *cmd, char **args, char **env)
 {
-	char *path_env, *cmd_path_prefix, *cmd_path;
+	char *cmd_path_prefix, *cmd_path, *path_env_cpy, *path_env;
+	int child_pid, wstatus;
 
-	path_env = extract_path(env);
-	if (path_env == NULL)
-	{
-		perror("No such file or directory");
-		exit(EXIT_FAILURE);
-	}
-	cmd_path_prefix = strtok(path_env, ":");
+	path_env = _getenv("PATH", env);
+	path_env_cpy = malloc(_strlen(path_env) + 1);
+
+	_strcpy(path_env_cpy, path_env);
+	path_env_cpy[_strlen(path_env)] = '\0';
+	cmd_path_prefix = strtok(path_env_cpy, ":");
 	while (cmd_path_prefix != NULL)
 	{
 		cmd_path = _strcat(cmd_path_prefix, cmd);
 		if (cmd_path == NULL)
 		{
 			perror(SHELL_NAME);
-			exit(EXIT_FAILURE);
 		}
-		if (execve(cmd_path, args, env) != -1)
+		if (access(cmd_path, F_OK) == 0)
 		{
-			free(cmd_path);
-			break;
+			child_pid = fork();
+			if (child_pid == 0)
+			{
+				if (execve(cmd_path, args, env) != -1)
+				{
+					perror(SHELL_NAME);
+					free(path_env_cpy);
+					free(cmd_path);
+				}
+			}
+			else
+			{
+				wait(&wstatus);
+				free(path_env_cpy);
+				free(cmd_path);
+				return;
+			}
 		}
 		free(cmd_path);
 		cmd_path_prefix = strtok(NULL, ":");
 	}
+	free(path_env_cpy);
 }
 /**
  * handle_command_with_args - Handle a command with arguments.
