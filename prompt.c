@@ -114,12 +114,12 @@ char *_getenv(char *_env, char **env)
 }
 
 /**
- * printenv - print out all environment variables.
+ * print_env - print out all environment variables.
  *
  * @env: An array of environment variable.
  */
- void print_env(char **env)
- {
+void print_env(char **env)
+{
 	int i = 0;
 	char **p_env, new_line = '\n';
 
@@ -130,4 +130,4 @@ char *_getenv(char *_env, char **env)
 		write(STDOUT_FILENO, &new_line, 1);
 		i++;
 	}
- }
+}
