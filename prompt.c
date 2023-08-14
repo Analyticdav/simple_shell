@@ -30,13 +30,20 @@ void prompt(char *env[])
 	{
 		write(STDOUT_FILENO, PROMPT_SYMBOL, _strlen(PROMPT_SYMBOL));
 		read = getline(&s_line, &s_len, stdin);
-		s_line[read - 1] = '\0';
 
 		if ((int)read == -1)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			free(s_line);
 			exit(0);
+		}
+
+		s_line[read - 1] = '\0';
+
+		if (_strcmp(_strstrp(s_line), "exit") == 0)
+		{
+			free(s_line);
+			exit(0); 
 		}
 
 		child_pid = fork();
