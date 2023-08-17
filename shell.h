@@ -32,5 +32,7 @@ size_t list_len(const list_t *h);
 list_t *add_node_end(list_t **head, char *str);
 void free_list(list_t *head);
 char *_getenv(char *_env, char **env);
+void check_exit(char *cmd);
+int _atoi(char *s);
 
 #endif /*!SHELL_H_*/

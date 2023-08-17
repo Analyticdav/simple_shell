@@ -39,11 +39,7 @@ void prompt(char **env)
 
 		s_line[read - 1] = '\0';
 
-		if (_strcmp(_strstrp(s_line), "exit") == 0)
-		{
-			break;
-		}
-
+		check_exit(s_line);
 		execute_command(s_line, env);
 	}
 	free(s_line);
@@ -132,22 +128,43 @@ void print_env(char **env)
 		i++;
 	}
 }
-
-void check_exit(char *cmd, va_list mem_to_free)
+/**
+ * check_exit - Check and handle the 'exit' command.
+ *
+ * This function checks if the command matches the 'exit' command and,
+ * if so, extracts the exit status argument and terminates the
+ * shell with the provided status code.
+ *
+ * @cmd: The command to check for the 'exit' command.
+ */
+void check_exit(char *cmd)
 {
-	int i;
+	int i, j, exit_status;
 	char *exit_arg;
 	char _exit[] = "exit";
 
-	while (cmd[i] != ' ' || cmd[i] != '\0')
+	i = j = 0;
+	while (_exit[i] != '\0')
 	{
 		if (cmd[i] != _exit[i])
 			return;
 		i++;
 	}
 	if (cmd[i] == '\0')
+	{
+		free(cmd);
 		exit(0);
+	}
 	exit_arg = cmd + i + 1;
 
+	exit_status = _atoi(exit_arg);
 
+	if (exit_status == -1)
+	{
+		free(cmd);
+		write(STDOUT_FILENO, SHELL_NAME ": numeric argument required\n", 32);
+		exit(2);
+	}
+	free(cmd);
+	exit(exit_status);
 }
