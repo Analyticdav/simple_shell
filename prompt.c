@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <stdarg.h>
 #include <stddef.h>
 #include <string.h>
 #include <syscall.h>
@@ -130,4 +131,23 @@ void print_env(char **env)
 		write(STDOUT_FILENO, &new_line, 1);
 		i++;
 	}
+}
+
+void check_exit(char *cmd, va_list mem_to_free)
+{
+	int i;
+	char *exit_arg;
+	char _exit[] = "exit";
+
+	while (cmd[i] != ' ' || cmd[i] != '\0')
+	{
+		if (cmd[i] != _exit[i])
+			return;
+		i++;
+	}
+	if (cmd[i] == '\0')
+		exit(0);
+	exit_arg = cmd + i + 1;
+
+
 }
