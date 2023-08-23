@@ -22,6 +22,10 @@ int main(int argc, char *argv[], char *env[])
 	{
 		prompt(env);
 	}
+	else if (argc == 2)
+	{
+		handle_shell_file_args(argv[1], env);
+	}
 
 	return (0);
 }

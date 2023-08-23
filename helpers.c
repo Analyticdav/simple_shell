@@ -51,7 +51,7 @@ int _strlen(char *s)
 	return (i);
 }
 /**
- * _strcat - Concatenate two strings with a '/' in between.
+ * _strpathcat - Concatenate two strings with a '/' in between.
  *
  * This function concatenates two strings `s1` and `s2` with a '/'
  * character in between them. It returns a newly
@@ -61,7 +61,7 @@ int _strlen(char *s)
  * @s2: The second string.
  * Return: Pointer to the concatenated string, or NULL on failure.
  */
-char *_strcat(char *s1, char *s2)
+char *_strpathcat(char *s1, char *s2)
 {
 	int i;
 	char *arr;

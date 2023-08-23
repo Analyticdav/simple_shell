@@ -23,6 +23,7 @@ void execute_command(char *cmd, char **env);
 int _strcmp(char *s1, char *s2);
 char *extract_path(char **env);
 char *_strcat(char *s1, char *s2);
+char *_strpathcat(char *s1, char *s2);
 void _strcpy(char *dest, char *src);
 char *_strstrp(char *s);
 void handle_path_to_cmd(char *cmd, char **args, char **env);
@@ -34,5 +35,6 @@ void free_list(list_t *head);
 char *_getenv(char *_env, char **env);
 void check_exit(char *cmd);
 int _atoi(char *s);
+void handle_shell_file_args(char *file_path, char **env);
 
 #endif /*!SHELL_H_*/

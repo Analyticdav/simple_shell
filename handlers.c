@@ -92,7 +92,7 @@ void handle_cmd(char *cmd, char **args, char **env)
 	cmd_path_prefix = strtok(path_env_cpy, ":");
 	while (cmd_path_prefix != NULL)
 	{
-		cmd_path = _strcat(cmd_path_prefix, cmd);
+		cmd_path = _strpathcat(cmd_path_prefix, cmd);
 		if (cmd_path == NULL)
 		{
 			perror(SHELL_NAME);
