@@ -5,4 +5,6 @@
 ### Task 2 (Simple shell 0.2) Handles command lines with arguments.
 ### Task 3 (Simple shell 0.3) Handles the PATH
 ### Task 4 (Simple shell 0.4) Implement the exit built-in, that exits the shell.
-### Task 5 (Simple shell 1.0) Implements the env built-in, that prints the current environment
+### Task 5 (Simple shell 1.0) Implements the env built-in, that prints the current environment.
+### Task 6 (Simple shell 0.1.1) Requires students write own getline function.
+
