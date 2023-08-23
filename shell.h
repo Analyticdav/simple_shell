@@ -36,6 +36,5 @@ char *_getenv(char *_env, char **env);
 void check_exit(char *cmd);
 int _atoi(char *s);
 void handle_shell_file_args(char *file_path, char **env);
-int handle_cd(char *cmd, char **env);
 
 #endif /*!SHELL_H_*/
