@@ -68,6 +68,7 @@ void execute_command(char *cmd, char **env)
 	{
 		handle_path_to_cmd(cmd, args, env);
 		free(args);
+		free_list(head);
 		return;
 	}
 	handle_cmd(cmd, args, env);
