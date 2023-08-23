@@ -16,7 +16,7 @@
  * continuously reads user input commands. It executes
  * the entered command using the execute_command function.
  *
- * @env: An array of environment variables.
+ * @env: An array of environment variables
  */
 void prompt(char **env)
 {
