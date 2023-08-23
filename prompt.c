@@ -32,7 +32,7 @@ void prompt(char **env)
 
 		if ((int)read == -1)
 		{
-			write(STDOUT_FILENO, "\n", 1);
+			/*write(STDOUT_FILENO, "\n", 1);*/
 			free(s_line);
 			exit(0);
 		}

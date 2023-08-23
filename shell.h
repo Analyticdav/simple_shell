@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #define SHELL_NAME "hsh"
-#define PROMPT_SYMBOL "($) "
+#define PROMPT_SYMBOL ""
 /**
  * struct list_s - A singly linked list node structure.
  *
