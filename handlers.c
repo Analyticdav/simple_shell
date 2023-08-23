@@ -65,6 +65,11 @@ void handle_path_to_cmd(char *cmd, char **args, char **env)
 		else
 			wait(&wstatus);
 	}
+	else
+	{
+		printf("test");
+		perror(cmd);
+	}
 	free(cmd_copy);
 }
 /**
