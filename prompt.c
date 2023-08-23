@@ -39,6 +39,8 @@ void prompt(char **env)
 
 		s_line[read - 1] = '\0';
 
+		if (handle_cd(s_line, env) == 0)
+			continue;
 		check_exit(s_line);
 		execute_command(s_line, env);
 	}

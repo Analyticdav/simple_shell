@@ -42,3 +42,52 @@ void handle_shell_file_args(char *file_path, char **env)
 		i++;
 	}
 }
+
+/**
+ * handle_cd - Change the current working directory.
+ *
+ * @cmd: The command containing the arguments
+ * for changing the directory.
+ * @env: An array of environment variables.
+ * Return: 0 on success, -1 on failure.
+ */
+int handle_cd(char *cmd, char **env)
+{
+	char *token, *HOME, *home_token, *PREV_PWD, *prev_token;
+	int i = 0;
+	char CD[] = "cd";
+
+	while (cmd[i] != '\0' || CD[i] != '\0')
+	{
+		if (CD[i] == '\0')
+			break;
+		if (cmd[i] != CD[i])
+			return (-1);
+		i++;
+	}
+	token = strtok(cmd, " ");
+	token = strtok(NULL, " ");
+	if (token == NULL)
+	{
+		HOME = _getenv("HOME", env);
+		if (HOME != NULL)
+		{
+			home_token = strtok(HOME, "=");
+			home_token = strtok(NULL, "=");
+			chdir(home_token);
+		}
+	}
+	else if (_strcmp(token, "-") == 0)
+	{
+		PREV_PWD = _getenv("OLDPWD", env);
+		if (HOME != NULL)
+		{
+			prev_token = strtok(PREV_PWD, "=");
+			prev_token = strtok(NULL, "=");
+			chdir(prev_token);
+		}
+	}
+	else
+		perror(cmd);
+	return (0);
+}
