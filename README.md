@@ -8,3 +8,4 @@
 ### Task 5 (Simple shell 1.0) Implements the env built-in, that prints the current environment.
 ### Task 6 (Simple shell 0.1.1) Requires students write own getline function.
 ### Task 7 (Simple shell 0.2.1) This task prevents learners to use the strtok function
+### Task 8 
